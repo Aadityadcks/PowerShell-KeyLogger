@@ -1,142 +1,50 @@
-PowerShell Keylogging Techniques
-Educational Proof of Concept (PoC) – Defensive Security Research
+⌨️ PowerShell Keylogger PoC 
+An Educational Proof of Concept for Windows API Interaction and Persistence.
 
-⚠️ Disclaimer
 
-This project is strictly for educational, academic, and authorized security research purposes only.
-It does not contain functional keylogging code.
+⚠️ Ethical & Legal Warning:
+This project is for educational and authorized security research purposes only.
+Monitoring keystrokes on a machine you do not own or without explicit, written consent is illegal and a violation of privacy. Use this responsibly to understand how malware functions and how to defend against it.
 
-The purpose of this repository is to explain how certain Windows API calls can be abused by malicious actors, how persistence mechanisms work, and how defenders can detect and mitigate such threats.
 
-Unauthorized monitoring of user activity without explicit consent is illegal and unethical.
 
-🎯 Project Objective
+🎯 Project Overview
+This project demonstrates how a simple PowerShell script can interface with low-level Windows APIs to monitor hardware states. It showcases:
 
-This repository documents:
+API Hooking: Using user32.dll to detect key presses globally.
 
-How keyboard state monitoring works at a conceptual level
+Stealth Execution: Running processes in a hidden window state.
 
-How Windows API functions (e.g., those within user32.dll) may be abused
+Persistence: Automatically starting the script upon user login via the Windows Startup folder.
 
-How PowerShell can be leveraged for post-exploitation techniques
+File,Description:
 
-How persistence can be achieved through common Windows startup locations
+📄 kl.ps1                  The core logic script that captures and logs keystrokes.(presented in Documents folder)
+📂 kl.txt                  The output log file (generated in your Documents folder).
+🔗 kl_auto.lnk             The startup shortcut for persistent execution.(presented in startup folder)
 
-Most importantly — how defenders can detect and prevent these techniques
+🚀 Getting Started:
 
-This project is written from a defensive cybersecurity perspective.
+1️⃣ Setup the Core Script
+Ensure kl.ps1 is located in your Documents folder.
 
-🧠 Educational Topics Covered
-1. Windows API Interaction via PowerShell
+Path: C:\Users\<YourUser>\Documents\kl.ps1
 
-PowerShell can dynamically interface with unmanaged Windows libraries.
-Attackers sometimes leverage this capability to call low-level API functions to:
+3️⃣ Enable Auto-Start (Persistence):
+Execute the block present inside Persistent.txt file to ensure the script survives a reboot:
 
-Monitor keyboard state
+🧹 Cleanup & Removal
+If you are finished with your research, follow these steps to remove all traces:
 
-Interact with system processes
+Stop the Process:(more discription inside Stoping-Process file)
+Get-Process powershell | Where-Object {$_.CommandLine -like "*kl.ps1*"} | Stop-Process -Force
+Delete Persistence: Navigate to shell:startup and delete kl_auto.lnk.
 
-Query hardware input states
+Delete Logs: Remove kl.ps1 and kl.txt from your Documents.
 
-Understanding this behavior helps defenders recognize suspicious script activity.
 
-2. Keyboard State Polling (Conceptual)
+Author: [Aadi]
 
-Malicious scripts may:
+Topic: KeyLogging Research
 
-Continuously check virtual key codes
-
-Convert hardware input into readable text
-
-Write captured data to local files
-
-From a detection standpoint, this often results in:
-
-High-frequency polling loops
-
-Repeated API calls to input-related functions
-
-Unusual file write behavior in user directories
-
-3. Persistence via Startup Folder
-
-A common persistence method involves placing a shortcut or executable inside:
-
-%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
-
-This ensures execution at user login.
-
-Defensive monitoring should include:
-
-Auditing the Startup folder
-
-Monitoring shortcut creation
-
-Reviewing suspicious PowerShell execution flags
-
-🔍 How Attackers Attempt Stealth
-
-Common stealth techniques include:
-
-Running PowerShell with hidden window styles
-
-Bypassing execution policies
-
-Avoiding profile loading
-
-Logging to inconspicuous text files in user directories
-
-Security tools often flag combinations of these behaviors.
-
-🛡️ Defensive Detection Strategies
-1. Monitor Suspicious PowerShell Execution
-
-Look for:
-
-Hidden window execution
-
-Execution policy bypass flags
-
-Long-running background PowerShell processes
-
-Tools:
-
-Windows Event Viewer (Event ID 4688 – Process Creation)
-
-Sysmon (Event ID 1)
-
-EDR telemetry
-
-2. Detect API Abuse Patterns
-
-Antimalware systems may flag:
-
-Dynamic imports of Windows API libraries
-
-Calls to keyboard state functions
-
-Rapid polling loops
-
-Modern Windows Defender and AMSI provide behavioral analysis for such patterns.
-
-3. Startup Persistence Auditing
-
-Regularly inspect:
-
-Startup folder contents
-
-Task Scheduler entries
-
-Registry Run keys
-
-Also review the Startup tab in Task Manager for anomalies.
-
-4. File Integrity Monitoring
-
-Watch for:
-
-Unexpected text files appearing in user directories
-
-Rapid append operations to hidden log files
-
-Repeated write activity from PowerShell processes
+Year: 2026
