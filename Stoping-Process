@@ -1,0 +1,35 @@
+
+
+Follow these steps exactly:
+
+1. Stop the Background Process (No Admin Needed)
+Since you started the process as a standard user, you can stop it without Admin:
+
+Open PowerShell ISE (the regular blue window).
+
+Paste this command and press Enter:
+
+PowerShell
+Get-Process powershell | Where-Object {$_.CommandLine -like "*kl.ps1*"} | Stop-Process -Force
+This specifically kills the keylogger without closing your current PowerShell window.
+
+2. Remove the Startup File
+This is the file that makes it "re-appear" after a reboot.
+
+Press Windows Key + R to open the Run box.
+
+Type shell:startup and hit Enter.
+
+A folder window will pop up. Find the file named kl_auto (it has a small arrow on the icon).
+
+Right-click it and select Delete.
+
+3. Delete the Script and the Log
+Now, go to your Documents folder and delete the actual files:
+
+Open File Explorer and go to Documents.
+
+Find kl.ps1 → Right-click → Delete.
+
+Find kl.txt → Right-click → Delete.
+
