@@ -1,65 +1,142 @@
-PowerShell Keylogger: Educational Proof of Concept (PoC)
+PowerShell Keylogging Techniques
+Educational Proof of Concept (PoC) – Defensive Security Research
+
 ⚠️ Disclaimer
-For Educational and Authorized Testing Purposes Only. Unauthorized use of this script on a computer you do not own or without explicit permission is illegal. This project is intended to demonstrate how Windows API calls (user32.dll) can be used by PowerShell to monitor hardware states and how persistence is achieved via the Windows Startup folder.
 
-🛠️ Components
-This project consists of three main parts:
+This project is strictly for educational, academic, and authorized security research purposes only.
+It does not contain functional keylogging code.
 
-kl.ps1: The core script that polls the keyboard state.
+The purpose of this repository is to explain how certain Windows API calls can be abused by malicious actors, how persistence mechanisms work, and how defenders can detect and mitigate such threats.
 
-Persistence Mechanism: A script to create a hidden startup shortcut.
+Unauthorized monitoring of user activity without explicit consent is illegal and unethical.
 
-Log File: A local text file (kl.txt) where keystrokes are recorded.
+🎯 Project Objective
 
-🚀 Installation & Usage
-1. Script Setup
-Place the kl.ps1 file in your Documents folder:
-C:\Users\<YourUsername>\Documents\kl.ps1
+This repository documents:
 
-2. Immediate Execution (Hidden Mode)
-To run the script immediately in the background without a window:
+How keyboard state monitoring works at a conceptual level
 
-PowerShell
-Start-Process powershell.exe -ArgumentList "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$HOME\Documents\kl.ps1`""
-3. Enable Persistence (Auto-Start on Boot)
-Run the following block in PowerShell to ensure the script runs every time the user logs in:
+How Windows API functions (e.g., those within user32.dll) may be abused
 
-PowerShell
-$WshShell = New-Object -ComObject WScript.Shell
-$StartupPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\kl_auto.lnk"
-$Shortcut = $WshShell.CreateShortcut($StartupPath)
-$Shortcut.TargetPath = "powershell.exe"
-$Shortcut.Arguments = "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$HOME\Documents\kl.ps1`""
-$Shortcut.Save()
-🔍 How it Works
-API Hooking: The script uses Add-Type to import the GetAsyncKeyState function from user32.dll.
+How PowerShell can be leveraged for post-exploitation techniques
 
-Polling: It iterates through ASCII/Virtual Key codes (8–254) every 40ms.
+How persistence can be achieved through common Windows startup locations
 
-Formatting: Special keys like [ENTER], [SPACE], and [BACKSPACE] are formatted for readability.
+Most importantly — how defenders can detect and prevent these techniques
 
-Stealth: By using the -WindowStyle Hidden flag, the process runs without a visible console window.
+This project is written from a defensive cybersecurity perspective.
 
-🛑 Uninstallation / Cleanup
-To completely remove the script and its traces:
+🧠 Educational Topics Covered
+1. Windows API Interaction via PowerShell
 
-Kill the process:
+PowerShell can dynamically interface with unmanaged Windows libraries.
+Attackers sometimes leverage this capability to call low-level API functions to:
 
-PowerShell
-Get-Process powershell | Where-Object {$_.CommandLine -like "*kl.ps1*"} | Stop-Process -Force
-Delete files:
+Monitor keyboard state
 
-Delete the shortcut in shell:startup (kl_auto.lnk).
+Interact with system processes
 
-Delete kl.ps1 and kl.txt from your Documents folder.
+Query hardware input states
 
-🛡️ Defenses Against This Method
-Antimalware (AMSI): Windows Defender often flags GetAsyncKeyState patterns in PowerShell.
+Understanding this behavior helps defenders recognize suspicious script activity.
 
-Execution Policies: Setting a strict Restricted execution policy.
+2. Keyboard State Polling (Conceptual)
 
-Startup Monitoring: Regularly checking the shell:startup folder and Task Manager's "Startup" tab.
+Malicious scripts may:
 
-Author: [Your Name/Handle]
+Continuously check virtual key codes
 
-Date: March 2026
+Convert hardware input into readable text
+
+Write captured data to local files
+
+From a detection standpoint, this often results in:
+
+High-frequency polling loops
+
+Repeated API calls to input-related functions
+
+Unusual file write behavior in user directories
+
+3. Persistence via Startup Folder
+
+A common persistence method involves placing a shortcut or executable inside:
+
+%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
+
+This ensures execution at user login.
+
+Defensive monitoring should include:
+
+Auditing the Startup folder
+
+Monitoring shortcut creation
+
+Reviewing suspicious PowerShell execution flags
+
+🔍 How Attackers Attempt Stealth
+
+Common stealth techniques include:
+
+Running PowerShell with hidden window styles
+
+Bypassing execution policies
+
+Avoiding profile loading
+
+Logging to inconspicuous text files in user directories
+
+Security tools often flag combinations of these behaviors.
+
+🛡️ Defensive Detection Strategies
+1. Monitor Suspicious PowerShell Execution
+
+Look for:
+
+Hidden window execution
+
+Execution policy bypass flags
+
+Long-running background PowerShell processes
+
+Tools:
+
+Windows Event Viewer (Event ID 4688 – Process Creation)
+
+Sysmon (Event ID 1)
+
+EDR telemetry
+
+2. Detect API Abuse Patterns
+
+Antimalware systems may flag:
+
+Dynamic imports of Windows API libraries
+
+Calls to keyboard state functions
+
+Rapid polling loops
+
+Modern Windows Defender and AMSI provide behavioral analysis for such patterns.
+
+3. Startup Persistence Auditing
+
+Regularly inspect:
+
+Startup folder contents
+
+Task Scheduler entries
+
+Registry Run keys
+
+Also review the Startup tab in Task Manager for anomalies.
+
+4. File Integrity Monitoring
+
+Watch for:
+
+Unexpected text files appearing in user directories
+
+Rapid append operations to hidden log files
+
+Repeated write activity from PowerShell processes
